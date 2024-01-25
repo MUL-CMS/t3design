@@ -9,16 +9,23 @@ def TRIP_unitcell(V_bcc: float, V_hcp: float = None, coa: float = np.sqrt(8/3),
     This function calculates a unit cell structure for a TRIP effect, which involves the transformation
     from a BCC (Body-Centered Cubic) to an HCP (Hexagonal Close-Packed) structure.
 
-    Args:
-        V_bcc (float): The specific volume (per atom) of a BCC unit cell.
-        V_hcp (float, optional): The specific volume (per atom) of an HCP unit cell. Defaults to None.
-        coa (float): c-over-a ratio of the hcp structure. Defaults to sqrt(8/3).
-        delta_shape (float): A shape parameter. Defaults to 0.
-        delta_shuffle (float): A shuffle parameter. Defaults to 0.
+    Parameters
+    ----------
+    V_bcc : float
+        The specific volume (per atom) of a BCC unit cell.
+    V_hcp : float, optional
+        The specific volume (per atom) of an HCP unit cell. Defaults to None.
+    coa : float
+        c-over-a ratio of the HCP structure. Defaults to sqrt(8/3).
+    delta_shape : float
+        A shape parameter. Defaults to 0.
+    delta_shuffle : float
+        A shuffle parameter. Defaults to 0.
 
-    Returns:
-        ase.Atoms: The resulting unit cell structure represented as an ASE Atoms object.
-
+    Returns
+    -------
+    Atoms
+        The resulting unit cell structure represented as an ASE Atoms object.
     """
     
     # create a bcc cell, in the orthorhombic setting, as described in 
