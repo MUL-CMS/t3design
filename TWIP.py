@@ -49,6 +49,11 @@ def TWIP_332(V_bcc: float, zeta: float) -> Atoms:
     Atoms
         ASE Atoms object representing the crystal structure after twinning transformation.
     """
+    # Based on following paper and its supplementary material:
+    # P. Kwasniak, F. Sun, S. Mantri, R. Banerjee, F. Prima
+    # Polymorphic nature of {332}〈113〉twinning mode in BCC alloys
+    # Materials Research Letters. 10 (2022) 334–342
+    
     # get bcc lattice parameter
     a_bcc = (V_bcc * 2) ** (1 / 3)
 
