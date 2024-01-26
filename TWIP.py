@@ -65,15 +65,11 @@ def TWIP_332(V_bcc: float, zeta: float) -> Atoms:
     wbeta = twin_cell.cell.cellpar()[2]
     delta4 = (3 * a_bcc ** 2 + bbeta ** 2) / (4 * vbeta)
 
-    # new lattice parameters
-    ctwin = (wbeta ** 2 + (2 * zeta * delta4) ** 2) ** 0.5
-    gtwin = np.arctan(zeta * delta4 / wbeta) * 180 / np.pi
-
     # construct model
     twin = twin_cell.copy()
     pos = twin.get_positions()
     for i in range(len(pos)):
-        pos[i, 0] += 0.5 * 2 * pos[i, 2] * zeta * delta4 / wbeta
+        pos[i, 0] += pos[i, 2] * zeta * delta4 / wbeta
         if abs(pos[i, 1]) < 0.1:
             pos[i, 2] += zeta * wbeta / 22
         else:
@@ -81,8 +77,8 @@ def TWIP_332(V_bcc: float, zeta: float) -> Atoms:
     twin.set_positions(pos)
 
     # new cell corresponding to the above displacements
-    twin.set_cell([vbeta, bbeta, ctwin, 90, 90 - gtwin, 90], scale_atoms=False)
-    # apply additional shear, thereby doubling the shear angle
-    twin.set_cell([vbeta, bbeta, ctwin, 90, 90 - 2 * gtwin, 90], scale_atoms=True)
+    twin.set_cell([[vbeta, 0, 0], [0, bbeta, 0], [zeta*delta4, 0, wbeta]], scale_atoms=False)
+    # apply additional shear, thereby recovering the PBC
+    twin.set_cell([[vbeta, 0, 0], [0, bbeta, 0], [zeta*vbeta, 0, wbeta]], scale_atoms=True)
 
     return twin
