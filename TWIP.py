@@ -63,16 +63,20 @@ def TWIP_332(V_bcc: float, zeta: float) -> Atoms:
     bbeta = twin_cell.cell.cellpar()[1]
     vbeta = twin_cell.cell.cellpar()[0]
     wbeta = twin_cell.cell.cellpar()[2]
-    delta4 = (3 * a_bcc ** 2 + bbeta ** 2) / (4 * vbeta)
+    # factor 5.5 is correcting the displacement delta4 for the supercell size
+    delta4 = (3 * a_bcc ** 2 - bbeta ** 2) / (4 * vbeta) * 5.5
 
     # construct model
     twin = twin_cell.copy()
     pos = twin.get_positions()
     for i in range(len(pos)):
+        # applying delta_4
         pos[i, 0] += pos[i, 2] * zeta * delta4 / wbeta
         if abs(pos[i, 1]) < 0.1:
+            # applying delta_2
             pos[i, 2] += zeta * wbeta / 22
         else:
+            # applying delta_3
             pos[i, 2] -= zeta * wbeta / 22
     twin.set_positions(pos)
 
