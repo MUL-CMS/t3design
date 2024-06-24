@@ -43,3 +43,18 @@ Generate a crystal structure representing a 332-oriented BCC (body-centered cubi
 *Returns*
 - Atoms
     ASE Atoms object representing the crystal structure after twinning transformation.
+
+
+`TWIP_112(V_bcc: float, zeta: float) -> Atoms`
+
+Generate a crystal structure representing a 112-oriented BCC (body-centered cubic) lattice with a twinning transformation.
+
+*Parameters*
+- `V_bcc` : float
+    Volume of the BCC unit cell.
+`zeta` : float
+    Parameter for the twinning transformation.
+
+*Returns*
+- Atoms
+    ASE Atoms object representing the crystal structure after twinning transformation.
