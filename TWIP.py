@@ -170,3 +170,52 @@ def TWIP_112(V_bcc: float, zeta: float) -> Atoms:
     twin.set_positions(twin.positions + zeta*shifts)
 
     return twin
+
+
+def TWIP_112_Tobe(V_bcc: float, zeta: float) -> Atoms:
+    """
+    Generate a crystal structure representing a 112-oriented BCC (body-centered cubic) lattice with a twinning transformation.
+    The structural model has 4-atomic unitcell as described by Tobe et al. (Acta Mat, 2014)
+
+    Parameters
+    ----------
+    V_bcc : float
+        Volume of the BCC unit cell.
+    zeta : float
+        Parameter for the twinning transformation.
+
+    Returns
+    -------
+    Atoms
+        ASE Atoms object representing the crystal structure after twinning transformation.
+    """
+    # Based on following paper (Figure 4):
+    # H. Tobe, H.Y. Kim, T. Inamura, H. Hosoda, S. Miyazaki
+    # Origin of 332 twinning in metastable β-Ti alloys
+    # Acta Mater. 64 (2014) 345–3550 (2022) 334–342
+    
+    # get bcc lattice parameter
+    a_bcc = (V_bcc * 2) ** (1 / 3)
+
+    # parameters for the twinning transformation
+    v = a_bcc*np.array([(1+1+1)**0.5/2, (1+1+0)**0.5, (2**2+1+1)**0.5])
+    
+    # untwinned positions
+    positions = np.array([[0, 0, 0], [0.5, 0, 0.5],
+                [0.25, 0.5, 0.25], [0.75, 0.5, 0.75]])
+    # full shuffling
+    shifts = np.array([
+        np.array([0, 0, 0]),
+        np.array([0, 0, 0]),
+        np.array([1/2, 0, 0]),
+        np.array([-1/2, 0, 0])
+    ])
+
+    twin = Atoms(
+        cell = [[v[0], 0, 0], [0, v[1], 0], [1/3*v[0]-zeta*2/3*v[0], 0, 2/3*v[2]]],
+        symbols = 'H4',        
+        scaled_positions = positions+zeta*shifts,
+        pbc=True,
+    )
+
+    return twin
