@@ -74,6 +74,82 @@ def TRIP_unitcell(V_bcc: float, V_hcp: float = None, coa: float = np.sqrt(8/3),
     )
     return struct
 
+# https://next-gen.materialsproject.org/materials/mp-72
+# omega-Ti
+def TRIP_unitcell_bcc_omega(V_bcc: float, V_omega: float = None, coa: float = 0.619,
+                  delta_shape: float = 0, delta_shuffle: float = 0) -> Atoms:
+    """
+    Compute a unit cell structure corresponding to a TRIP (Transformation-Induced Plasticity) effect.
+
+    This function calculates a unit cell structure for a TRIP effect, which involves the transformation
+    from a BCC (Body-Centered Cubic) to a hexagonal omega structure.
+
+    Parameters
+    ----------
+    V_bcc : float
+        The specific volume (per atom) of a BCC unit cell.
+    V_omega : float, optional
+        The specific volume (per atom) of an omega unit cell. Defaults to None.
+    coa : float
+        c-over-a ratio of the omega structure. Defaults to 0.619.
+    delta_shape : float
+        A shape parameter. Defaults to 0.
+    delta_shuffle : float
+        A shuffle parameter. Defaults to 0.
+
+    Returns
+    -------
+    Atoms
+        The resulting unit cell structure represented as an ASE Atoms object.
+    """
+    
+    # we work with an orthorhombic cell as constructured for the TWIP 112/111
+    #  ---> get_112_cell() from TWIP module
+    # shuffling is done along the a-axis: 
+    #   1/3 -> 1/2
+    #   2/3 -> 1/2
+    #   0 -> 0
+    # to keep hexagonal shape (of the bcc(111) plane, i.e. ortho (100) plane),
+    # we fix the b/c ratio to that we got for the ideal cell: sqrt(1/3)
+    # https://www.dierk-raabe.com/s/cc_images/teaserbox_2485299181.jpg?t=1572164463
+    from TWIP import get_112_cell
+    a_bcc = (2*V_bcc)**(1/3)
+    struct_bcc = get_112_cell(a_bcc=a_bcc)
+
+    if V_omega == None:
+        # no volume of the omega structure was provided, let's take the same
+        # specific volume as for the bcc cell
+        V_omega = V_bcc
+    a_bcc = (2*V_omega)**(1/3)
+    struct_omega = get_112_cell(a_bcc=a_bcc) 
+    # a_ortho = c_omega
+    # b_ortho = a_omega
+    # c_ortho = sqrt(3)*a_omega
+    # a_ortho*b_ortho*c_ortho = V_ortho = 6*V_omega
+    # a_omega^3 * coa * sqrt(3) = 6*V_omega
+    b_ortho = (6*V_omega/(coa*3**0.5))**(1/3)
+    c_ortho = b_ortho*3**0.5
+    a_ortho = coa*b_ortho
+    struct_omega.set_cell(
+        [a_ortho, b_ortho, c_ortho],
+        scale_atoms=True
+    )
+    # shuffle (collapse) positions
+    pos = struct_omega.get_scaled_positions()
+    for p in pos:
+        if abs(p[0] - 1/2) < 1.5/6:
+            p[0] = 1/2
+    struct_omega.set_scaled_positions(pos)
+    
+    # generate and return the final structure based on the shape and shuffle parameters
+    struct = Atoms(
+        'Ti6',
+        scaled_positions = (1-delta_shuffle)*struct_bcc.get_scaled_positions() + \
+                           delta_shuffle*struct_omega.get_scaled_positions(),
+        cell = (1-delta_shape)*struct_bcc.cell + delta_shape*struct_omega.cell,
+        pbc = [True, True, True]
+    )
+    return struct
 
 if __name__ == '__main__':
 
@@ -99,8 +175,14 @@ if __name__ == '__main__':
         mkdir('TRIP_path')
     chdir('TRIP_path')
     
-    structs = [TRIP_unitcell(V_beta, delta_shape=c, delta_shuffle=s) for c, s in zip(shape, shuffle)]
-    for i, (c, s) in enumerate(zip(shape, shuffle)):
-        struct = TRIP_unitcell(V_beta, delta_shape=c, delta_shuffle=s)
-        write(filename=f'POSCAR_{i:05d}.vasp', images=struct*(5,5,4), format='vasp', direct=True)
+    # for i, (c, s) in enumerate(zip(shape, shuffle)):
+    #     struct = TRIP_unitcell_bcc_omega(V_beta, V_omega=51.06/3, delta_shape=c, delta_shuffle=s)
+    #     write(filename=f'POSCAR_{i:05d}.vasp', images=struct, format='vasp', direct=True)
+    # chdir('..')
+    
+    shuffle = np.linspace(0, 1, N_images).tolist()
+              
+    for i, s in enumerate(shuffle):
+        struct = TRIP_unitcell_bcc_omega(V_beta, V_omega=151.06/3, delta_shape=s, delta_shuffle=s)
+        struct.write(filename=f'POSCAR_{i:05d}.vasp', format='vasp', direct=True)
     chdir('..')
