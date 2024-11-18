@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='T3Design',  # Name of your project
+    name='t3design',  # Name of your project
     version='0.1',  # Version number
     packages=find_packages(),  # Automatically find all packages in the directory
     include_package_data=True,  # Include non-Python files listed in MANIFEST.in
