@@ -112,7 +112,7 @@ def TRIP_unitcell_bcc_omega(V_bcc: float, V_omega: float = None, coa: float = 0.
     # to keep hexagonal shape (of the bcc(111) plane, i.e. ortho (100) plane),
     # we fix the b/c ratio to that we got for the ideal cell: sqrt(1/3)
     # https://www.dierk-raabe.com/s/cc_images/teaserbox_2485299181.jpg?t=1572164463
-    from TWIP import get_112_cell
+    from t3design.TWIP import get_112_cell
     a_bcc = (2*V_bcc)**(1/3)
     struct_bcc = get_112_cell(a_bcc=a_bcc)
 
