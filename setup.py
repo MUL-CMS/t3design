@@ -11,7 +11,7 @@ setup(
     description='Collection of functions of structural transformations',
     long_description=open('README.md').read(),  # Read the README for the long description
     long_description_content_type='text/markdown',
-    url='https://git.unileoben.ac.at/cms/t3design',  # Link to your project on GitHub
+    url='https://github.com/MUL-CMS/t3design.git',  # Link to your project on GitHub
     classifiers=[  # These help users find your project by filtering on PyPI
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
