@@ -1,4 +1,38 @@
 def map_atoms(str1, str2, species=True):
+    """
+    Maps atoms from one atomic structure to another based on their scaled positions.
+
+    This function attempts to match each atom in `str1` to the closest corresponding atom
+    in `str2`, considering periodic boundary conditions by using images of `str2`.
+    If `species` is True, the mapping returns atomic symbols instead of indices.
+
+    Parameters:
+    -----------
+    str1 : ASE Atoms object
+        The first atomic structure to be mapped.
+
+    str2 : ASE Atoms object
+        The second atomic structure, which serves as the reference for mapping.
+
+    species : bool, optional (default=True)
+        If True, returns atomic symbols from `str2` corresponding to the mapped indices.
+        If False, returns the indices of the mapped atoms in `str2`.
+
+    Returns:
+    --------
+    list
+        A list of atomic indices or atomic symbols (if `species=True`), representing
+        the best matches from `str1` to `str2`.
+
+    Raises:
+    -------
+    Exception
+        If `str1` and `str2` have different numbers of atoms.
+
+    Warning
+        If the mapping contains duplicates, indicating possible mismatches.
+    """
+
     from itertools import product
     from numpy import dot, concatenate
     from numpy.linalg import norm
